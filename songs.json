@@ -1,0 +1,48 @@
+[
+  {
+    "Title": "Kom igen Lena",
+    "Artist": "Håkan Hellström",
+    "Genre": "Pop",
+    "Year": 2002,
+    "Language": "svenska",
+    "Lyrics": [
+      "Kom igen Lena, stanna kvar",
+      "Här finns inget annat än du och jag",
+      "Och jag vill ha dig nu"
+    ],
+    "Notes": "Bra för sommarhäng, tänk på introt!",
+    "Status": "Planerad",
+    "LastRehearsed": "2025-10-01T15:30:00"
+  },
+  {
+    "Title": "Wonderwall",
+    "Artist": "Oasis",
+    "Genre": "Rock",
+    "Year": 1995,
+    "Language": "engelska",
+    "Lyrics": [
+      "Today is gonna be the day",
+      "That they're gonna throw it back to you",
+      "By now you should've somehow",
+      "Realized what you gotta do"
+    ],
+    "Notes": "Publikfavorit, capo 2.",
+    "Status": "Klar för cover",
+    "LastRehearsed": "2025-10-12T18:00:00"
+  },
+  {
+    "Title": "Knocking on Heaven's Door",
+    "Artist": "Bob Dylan",
+    "Genre": "Folk",
+    "Year": 1973,
+    "Language": "engelska",
+    "Lyrics": [
+      "Mama, take this badge off of me",
+      "I can't use it anymore",
+      "It's getting dark, too dark to see"
+    ],
+    "Notes": "Enkel att spela, fin publiksång.",
+    "Status": "Planerad",
+    "LastRehearsed": "2025-10-15T20:15:00"
+  }
+]
