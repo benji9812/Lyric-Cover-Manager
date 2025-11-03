@@ -9,7 +9,13 @@ namespace Lyric_Cover_Manager
     public class SongSection
     {
         public string SectionType { get; set; }   // "Verse", "Chorus", "Bridge", etc.
-        public List<string> Lines { get; set; }
+        private List<string> _lines = new();
+
+        public List<string> Lines
+        {
+            get => _lines;
+            set => _lines = value.Select(l => System.Net.WebUtility.HtmlDecode(l)).ToList();
+        }
     }
 
     public class Song
