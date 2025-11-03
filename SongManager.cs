@@ -11,7 +11,8 @@ namespace Lyric_Cover_Manager
     public class SongManager
     {
         private const string FilePath = "songs.json";
-        public List<Song> Songs { get; private set; }
+
+        public List<Song> Songs;
 
         public SongManager()
         {
@@ -29,7 +30,8 @@ namespace Lyric_Cover_Manager
         public void SaveSongs()
         {
             string json = JsonConvert.SerializeObject(Songs, Formatting.Indented);
-            File.WriteAllText(FilePath, json);
+            File.WriteAllText(FilePath, json); // FilePath = din path till songs.json
+            AnsiConsole.MarkupLine($"[italic grey]Songs saved to: {FilePath}[/]");
         }
 
         public void AddSong(Song song)
@@ -63,50 +65,61 @@ namespace Lyric_Cover_Manager
                 .OrderByDescending(s => s.LastRehearsed)
                 .Take(count);
         }
-
         public void AddSongInteractive()
         {
+            var title = MenuHelper.GetInput("Titel");
+            var artist = MenuHelper.GetInput("Artist");
+
+            // Hämta metadata automatiskt
+            var (genre, year) = SongMetadataImporter.FetchMetadata(artist, title);
+
             var song = new Song
             {
-                Title = MenuHelper.GetInput("Titel"),
-                Artist = MenuHelper.GetInput("Artist"),
-                Genre = MenuHelper.GetInput("Genre"),
+                Title = title,
+                Artist = artist,
+                Genre = genre,
                 Language = MenuHelper.GetInput("Språk"),
                 Notes = MenuHelper.GetInput("Anteckningar"),
                 Status = MenuHelper.GetInput("Status"),
                 LastRehearsed = DateTime.Now,
-                Year = int.TryParse(MenuHelper.GetInput("År"), out int year) ? year : 0,
+                Year = year,
                 Lyrics = new List<SongSection>()
             };
 
-            AnsiConsole.MarkupLine("[bold underline yellow]Lägg till låtsektioner![/]");
-            bool addSection = true;
-            while (addSection)
+            // 1. Hitta lyrics-sidan från Genius
+            string songUrl = GeniusImporter.SearchSong(artist, title);
+            if (string.IsNullOrWhiteSpace(songUrl))
             {
-                var sectionType = MenuHelper.GetInput("Sektionstyp (Verse, Chorus, Bridge, etc)").Trim();
-                var lines = new List<string>();
-                AnsiConsole.MarkupLine($"[green]Skriv lyrics en rad i taget! Tom rad för att avsluta sektion.[/]");
-                while (true)
-                {
-                    string line = MenuHelper.GetInput($"{sectionType} rad");
-                    if (string.IsNullOrWhiteSpace(line)) break;
-                    lines.Add(line);
-                }
-                song.Lyrics.Add(new SongSection
-                {
-                    SectionType = sectionType,
-                    Lines = lines
-                });
-
-                var more = MenuHelper.GetInput("Lägg till ytterligare sektion? (j/n)").Trim().ToLower();
-                addSection = (more == "j" || more == "ja");
+                AnsiConsole.MarkupLine("[red]Kunde inte hitta låten på Genius![/]");
+                return;
             }
 
+            // 2. Hämta och sektionera lyrics direkt från Genius-sidan
+            var sections = GeniusImporter.FetchSectionsFromGeniusPage(songUrl);
+            if (sections == null || sections.Count == 0)
+            {
+                AnsiConsole.MarkupLine("[red]Kunde inte hitta lyrics på Genius![/]");
+                return;
+            }
+
+            // 3. Låt användaren granska och ev. ändra sektionstyper
+            for (int i = 0; i < sections.Count; i++)
+            {
+                SongPresenter.ShowSection(sections[i]);
+                var newType = MenuHelper.GetInput($"Vill du ändra sektionstypen för ovan? ({sections[i].SectionType}) Tryck enter för att behålla.");
+                if (!string.IsNullOrWhiteSpace(newType))
+                    sections[i].SectionType = newType;
+            }
+            song.Lyrics.AddRange(sections);
+
+            // 4. Visa låten snyggt med Spectre.Console
+            AnsiConsole.MarkupLine($"[bold green]);Låten hittades och lyrics importerade![/]");
+
+            // 5. Lägg till låten i samlingen och spara
             Songs.Add(song);
             SaveSongs();
-            AnsiConsole.MarkupLine("[bold green]Låt tillagd![/]");
+            AnsiConsole.MarkupLine("[bold green]Låt tillagd och sparad![/]");
         }
-
 
         public void EditLyricsInteractive()
         {
@@ -134,16 +147,14 @@ namespace Lyric_Cover_Manager
             int i = 1;
             foreach (var section in song.Lyrics)
             {
-                AnsiConsole.MarkupLine($"{i}. [bold]{section.SectionType}[/]");
-                foreach (var line in section.Lines)
-                    AnsiConsole.MarkupLine($"   [white]{line}[/]");
+                // Använd GetSectionStyle från SongPresenter istället
+                SongPresenter.ShowSection(section);
                 i++;
             }
 
             string editSec = MenuHelper.GetInput("Nummer på sektion att ändra (eller 'ny' för ny sektion)");
             if (editSec.ToLower() == "ny")
             {
-                // Lägg till ny sektion
                 var sectionType = MenuHelper.GetInput("Sektionstyp (Verse, Chorus, Bridge, etc)").Trim();
                 var lines = new List<string>();
                 AnsiConsole.MarkupLine($"[green]Skriv lyrics en rad i taget! Tom rad för att avsluta sektion.[/]");
@@ -183,5 +194,27 @@ namespace Lyric_Cover_Manager
             AnsiConsole.MarkupLine("[bold green]Lyrics uppdaterade![/]");
         }
 
+        public void DeleteSongInteractive()
+        {
+            if (!Songs.Any())
+            {
+                AnsiConsole.MarkupLine("[red]Inga låtar att ta bort.[/]");
+                return;
+            }
+
+            var titles = Songs.Select(s => s.Title).ToList();
+            var songTitle = AnsiConsole.Prompt(new SelectionPrompt<string>()
+                .Title("Välj låt att ta bort:")
+                .AddChoices(titles));
+            var song = Songs.FirstOrDefault(s => s.Title.Equals(songTitle, StringComparison.OrdinalIgnoreCase));
+            if (song != null)
+            {
+                Songs.Remove(song);
+                SaveSongs();
+                AnsiConsole.MarkupLine($"[bold red]Låten \"{song.Title}\" borttagen och sparad![/]");
+            }
+            else
+                AnsiConsole.MarkupLine("[red]Låt ej hittad.[/]");
+        }
     }
 }

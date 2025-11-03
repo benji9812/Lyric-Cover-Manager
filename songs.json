@@ -1,16 +1,26 @@
-[
+Ôªø[
   {
     "Title": "Kom igen Lena",
-    "Artist": "HÂkan Hellstrˆm",
+    "Artist": "H√•kan Hellstr√∂m",
     "Genre": "Pop",
     "Year": 2002,
     "Language": "svenska",
     "Lyrics": [
-      "Kom igen Lena, stanna kvar",
-      "H‰r finns inget annat ‰n du och jag",
-      "Och jag vill ha dig nu"
+      {
+        "SectionType": "Verse",
+        "Lines": [
+          "Kom igen Lena, stanna kvar",
+          "H√§r finns inget annat √§n du och jag"
+        ]
+      },
+      {
+        "SectionType": "Chorus",
+        "Lines": [
+          "Och jag vill ha dig nu"
+        ]
+      }
     ],
-    "Notes": "Bra fˆr sommarh‰ng, t‰nk pÂ introt!",
+    "Notes": "Bra f√∂r sommarh√§ng, t√§nk p√• introt!",
     "Status": "Planerad",
     "LastRehearsed": "2025-10-01T15:30:00"
   },
@@ -21,13 +31,19 @@
     "Year": 1995,
     "Language": "engelska",
     "Lyrics": [
-      "Today is gonna be the day",
-      "That they're gonna throw it back to you",
-      "By now you should've somehow",
-      "Realized what you gotta do"
+      {
+        "SectionType": "Verse",
+        "Lines": [
+          "Today is gonna be the day",
+          "That they're gonna throw it back to you",
+          "By now you should've somehow",
+          "Realized what you gotta do"
+        ]
+      }
+      // Chorus saknas i din data, men du kan l√§gga till om du vill!
     ],
     "Notes": "Publikfavorit, capo 2.",
-    "Status": "Klar fˆr cover",
+    "Status": "Klar f√∂r cover",
     "LastRehearsed": "2025-10-12T18:00:00"
   },
   {
@@ -37,12 +53,19 @@
     "Year": 1973,
     "Language": "engelska",
     "Lyrics": [
-      "Mama, take this badge off of me",
-      "I can't use it anymore",
-      "It's getting dark, too dark to see"
+      {
+        "SectionType": "Verse",
+        "Lines": [
+          "Mama, take this badge off of me",
+          "I can't use it anymore",
+          "It's getting dark, too dark to see"
+        ]
+      }
+      // Chorus saknas i din data, men du kan l√§gga till om du vill!
     ],
-    "Notes": "Enkel att spela, fin publiksÂng.",
+    "Notes": "Enkel att spela, fin publiks√•ng.",
     "Status": "Planerad",
     "LastRehearsed": "2025-10-15T20:15:00"
   }
 ]
+
